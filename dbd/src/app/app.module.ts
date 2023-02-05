@@ -10,12 +10,14 @@ import { AppRoutingModule, routingComponents } from './app.routes';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IntroComponent } from './intro/intro.component';
+import { TutorialComponent } from './tutorial/tutorial.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     routingComponents,
     IntroComponent,
+    TutorialComponent,
   ],
   imports: [
     BrowserModule,

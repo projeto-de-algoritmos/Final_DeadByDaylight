@@ -3,12 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { IntroComponent } from './intro/intro.component';
 import { MapComponent } from './map/map.component';
+import { TutorialComponent } from './tutorial/tutorial.component';
 
 const routes: Routes = [
   {
     path: 'intro',
     component: IntroComponent
   },
+  {
+    path: 'tutorial',
+    component: TutorialComponent
+   },
   {
     path: 'map',
     component: MapComponent
@@ -30,4 +35,4 @@ const routes: Routes = [
   })
 
 export class AppRoutingModule { }
-export const routingComponents = [ IntroComponent, MapComponent ]
+export const routingComponents = [ IntroComponent, TutorialComponent, MapComponent ]

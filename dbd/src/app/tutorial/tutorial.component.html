@@ -1,0 +1,58 @@
+<div class="flex flex-col w-full h-full items-center bg-black text-justify text-white px-20 pb-10 text-2xl overflow-y-auto">
+    <img src="../../assets/main_icon.jpg" alt="icon" style="width: 250px; height: 200px;">
+    <span class="font-semibold text-white text-4xl">Tutorial</span>
+
+    <div>
+        <br>
+        Originalmente, o jogo Dead by Daylight é jogado em um grupo de 4 sobreviventes e 1 assassino. O objetivo dos sobreviventes é consertar 5 geradores para liberar o portão e fugir do mapa enquanto fogem do assassino pulando janelas e derrubando palets para atrasá-lo. Enquanto isso, o objetivo do assassino é matar todos os sobreviventes, mas para isso ele precisa acertar cada sobrevivente duas vezes (a primeira vez para machucá-lo e a segunda para derrubá-lo no chão) e enganchar ele 3 vezes. Cada vez que um sobrevivente é enganchado ele deverá ser salvo por outro sobrevivente, caso contrário ele irá perder vida até morrer direto.<br><br>
+
+        Porém, como este projeto é uma versão simplificada, algumas mecânicas foram adaptadas e existirá apenas um jogador.<br><br>
+
+        <span class="text-3xl font-semibold">Legendas:</span> 
+        <br><br>
+        <div class="flex flex-row mb-2">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-red-300"></span>: Palet aberta 
+        </div>
+        <div class="flex flex-row mb-2">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-red-500"></span>: Palet fechada
+        </div>
+        <div class="flex flex-row mb-2">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-blue-500"></span>: Janelas
+        </div>
+        <div class="flex flex-row mb-2">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-yellow-500"></span>: Gerador em progresso
+        </div>
+        <div class="flex flex-row mb-2">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-gray-500"></span>: Gerador finalizado
+        </div>
+        <div class="flex flex-row">
+            <span class="block h-7 w-7 text-center border-2 border-gray-500 bg-green-500"></span>: Portão
+        </div>
+        <br><br>
+
+        <span class="text-3xl font-semibold">Controles:</span> 
+        <br><br>
+        <span class="font-medium">A, S, D, W: </span>
+        movimentar-se pelo mapa. (não é preciso ficar segurando a tecla para o personagem andar, basta apertar para mudar a direção dele, pois ele já se movimenta sozinho até parar em uma parede).
+        <br><br>
+        <span class="font-medium">E: </span>
+        realizar ação. (só é possível realizar ações de reparar o gerador ou derrubar uma palet quando estiver ao lado de um desses objetos).
+        <br><br>
+
+        <span class="text-3xl font-semibold">Como jogar:</span> 
+        <br><br>
+        Quando o jogo começar, o assassino irá sumir do mapa, indicando que você não está no campo de visão dele e irá andar aleatoriamente pelo mapa. Quando ele ficar visível significa que ele te viu e está indo atrás de você utilizando o algorítmo de Dijkstra. Porém, se você já tiver iniciado algum gerador ele irá decidir se é melhor te perseguir ou sabotar o gerador que já está em progresso.
+        <br><br>
+        Enquanto isso, você deve conseguir fugir dele derrubando palets e pulando janelas, e completar os 5 geradores que tem no mapa. Se o assassino te alcançar não se preocupe, você apenas ficará machucado e ele irá para outro ponto do mapa. Porém, se ele te alcançar novamente você irá morrer e o jogo será finalizado.
+        <br><br>
+        Para fazer os geradores você apenas precisa ficar parado ao lado dele e apertar o botão de realizar uma ação (E).
+        <br><br>
+        Quando os 5 geradores forem concluídos o portão será aberto automaticamente, basta fugir por ele que você irá vencer.
+        <br><br>
+    </div>
+
+    <button
+        class="flex flex-row mt-4 flex-nowrap bg-black text-white text-3xl rounded-lg py-1 px-4 border-2 border-white"
+        (click)="skip()"
+    >Entendi</button>
+</div>

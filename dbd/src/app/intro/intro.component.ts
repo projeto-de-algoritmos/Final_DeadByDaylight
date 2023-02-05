@@ -17,7 +17,7 @@ export class IntroComponent implements OnInit {
 
   skip() {
     this.videoPlayer.nativeElement.pause();
-    this._router.navigate(['/map']);
+    this._router.navigate(['/tutorial']);
   }
 
 }

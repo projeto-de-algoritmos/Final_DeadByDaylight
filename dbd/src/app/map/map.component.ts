@@ -93,6 +93,8 @@ export class MapComponent implements OnInit {
   lastTimeStamp:number = 0;
   positionStartingGenerator: Casa | null = null;
 
+  started: boolean = false;
+
   constructor() { }
 
   @HostListener('document:keypress', ['$event'])
@@ -144,7 +146,7 @@ export class MapComponent implements OnInit {
   }
 
   startGame(){
-    //start
+    this.started = true;
     this.survivorMoviment();
     this.killerMoviment();
   }
