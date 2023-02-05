@@ -91,12 +91,14 @@ export class MapComponent implements OnInit {
 
   lastKey = '';
   lastTimeStamp:number = 0;
+  positionStartingGenerator: Casa | null = null;
 
   constructor() { }
 
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) { 
     let key = event.key;
+
     if(event.timeStamp-this.lastTimeStamp>200){
       this.lastTimeStamp = event.timeStamp;
       
@@ -114,9 +116,17 @@ export class MapComponent implements OnInit {
           this.direcao='L';
         }
       }
+
+      // if(this.playerPosition != this.positionStartingGenerator){
+      //   this.positionStartingGenerator = null;
+      // }
     }
 
-    if(key=='e' && this.lastKey != 'e'){
+    //console.log(this.playerPosition, this.positionStartingGenerator);
+    if(key=='e' && this.lastKey != 'e' && this.positionStartingGenerator==null){
+      console.log('atualizou');
+      
+      this.positionStartingGenerator = this.playerPosition;
       this.acao();
     }
 
@@ -232,6 +242,12 @@ export class MapComponent implements OnInit {
           this.playerPosition.l++;
         
       }
+
+      if(!this.hasGenerator()){
+        this.positionStartingGenerator = null;
+      }
+      
+
       this.survivorMoviment();
     }, 250);
   }

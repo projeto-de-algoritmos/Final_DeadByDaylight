@@ -7,10 +7,5 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
-  @ViewChild('videoPlayer', { static: false }) videoPlayer!: ElementRef;
-
-  constructor(private _router: Router) {}
-
   
 }
