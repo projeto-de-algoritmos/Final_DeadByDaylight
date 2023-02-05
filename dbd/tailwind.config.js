@@ -26,7 +26,7 @@ module.exports = {
         '160': '40rem'
       },
       backgroundImage: theme => ({
-        'layout-theme': "url('src/assets/pacman_map.png')"
+        'map': "url('src/assets/bg.jpeg')"
       }),
     },
   },

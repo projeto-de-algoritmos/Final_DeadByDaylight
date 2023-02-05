@@ -1,21 +1,21 @@
-<div class="flex flex-row items-start">
-<div class="flex flex-col m-4">
-    <div class="flex flex-row" *ngFor="let item of [].constructor(29); let l = index">
-        <div *ngFor="let item of [].constructor(29); let c = index">
-            <div *ngIf="!hasCharacter(l, c); else character" [class]="'block h-7 w-7 text-center border-2 border-gray-500 ' + getColor(l, c)">
-                <span *ngIf="l==3 && c==3">{{generatorsProgress[0]}}</span>
-                <span *ngIf="l==3 && c==25">{{generatorsProgress[1]}}</span>
-                <span *ngIf="l==16 && c==16">{{generatorsProgress[2]}}</span>
-                <span *ngIf="l==22 && c==2">{{generatorsProgress[3]}}</span>
-                <span *ngIf="l==28 && c==25">{{generatorsProgress[4]}}</span>
+<div class="flex flex-row items-start h-full justify-center bg-map bg-cover">
+    <div class="flex flex-col m-4">
+        <div class="flex flex-row" *ngFor="let item of [].constructor(29); let l = index">
+            <div *ngFor="let item of [].constructor(29); let c = index">
+                <div *ngIf="!hasCharacter(l, c); else character" [class]="'block h-7 w-7 text-center border-2 border-gray-500 ' + getColor(l, c)">
+                    <span *ngIf="l==3 && c==3">{{generatorsProgress[0]}}</span>
+                    <span *ngIf="l==3 && c==25">{{generatorsProgress[1]}}</span>
+                    <span *ngIf="l==16 && c==16">{{generatorsProgress[2]}}</span>
+                    <span *ngIf="l==22 && c==2">{{generatorsProgress[3]}}</span>
+                    <span *ngIf="l==28 && c==25">{{generatorsProgress[4]}}</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<button
- class="flex flex-row mt-4 flex-nowrap bg-yellow-500 text-black text-xl rounded-2xl py-1 px-4 border-2 border-white"
-        (click)="startGame()"
->Start</button>
+    <button
+     class="flex flex-row mt-4 flex-nowrap bg-yellow-500 text-black text-xl rounded-2xl py-1 px-4 border-2 border-white"
+            (click)="startGame()"
+    >Start</button>
 </div>
 
 <ng-template #character>
