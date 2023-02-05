@@ -1,0 +1,17 @@
+<video #videoPlayer
+    autoplay="true" 
+    preload="auto" 
+    muted="false" 
+    width="100%" 
+    height="100%"
+    (ended)="skip()"
+>
+    <source src="../assets/intro.mp4" type="video/mp4">
+    Seu navegador não suporta vídeo.
+</video>
+<button 
+    class="absolute right-5 bottom-5 z-1 text-white font-semibold text-xl border-2 border-white px-2 rounded-md"
+    (click)="skip()"
+>
+    Pular >
+</button>
