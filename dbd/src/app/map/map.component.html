@@ -14,9 +14,27 @@
     </div>
     <button
         *ngIf="!started"
-        class="flex flex-row mt-4 flex-nowrap bg-yellow-500 text-black text-xl rounded-2xl py-1 px-4 border-2 border-white"
+        class="flex flex-row mt-4 flex-nowrap bg-yellow-500 text-black text-xl rounded-2xl py-1 px-4 border-2 border-black"
         (click)="startGame()"
-    >Start</button>
+    >Iniciar</button>
+</div>
+
+<div 
+    class="label absolute z-10 flex flex-col justify-center items-center text-center w-full bg-black bg-opacity-75 text-8xl font-bold" 
+    *ngIf="finished"
+    style="text-shadow: 0 0 0.5rem #fff;"
+>
+    <div *ngIf="win; else lose" class="text-green-700">Parabéns, você venceu!</div>
+    <ng-template #lose>
+        <div class="text-red-500">
+            Você está morto!
+        </div>
+    </ng-template>
+
+    <button
+        class="flex flex-row mt-4 flex-nowrap w-28 text-center bg-yellow-500 text-black text-xl rounded-2xl py-1 px-4 border-2 border-black"
+        (click)="restartGame()"
+    >Reiniciar</button>
 </div>
 
 <ng-template #character>

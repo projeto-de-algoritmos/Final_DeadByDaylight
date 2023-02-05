@@ -79,13 +79,13 @@ export class MapComponent implements OnInit {
   playerPosition: Casa = {} as Casa;
   isPlayer: boolean = false;
   isInjuredPlayer: boolean = false;
+  isDeadPlayer: boolean = false;
   killerPosition: Casa = {} as Casa;
   isKiller: boolean = false;
   direcao: string = 'L';
   visibleKiller: boolean = true;
   visibleRange = 10;
 
-  visitados: boolean[] = [];
   s: Casa[] = [];
   arestas: Aresta[] = [];
 
@@ -94,6 +94,8 @@ export class MapComponent implements OnInit {
   positionStartingGenerator: Casa | null = null;
 
   started: boolean = false;
+  finished: boolean = false;
+  win: boolean = false;
 
   constructor() { }
 
@@ -126,8 +128,7 @@ export class MapComponent implements OnInit {
 
     //console.log(this.playerPosition, this.positionStartingGenerator);
     if(key=='e' && this.lastKey != 'e' && this.positionStartingGenerator==null){
-      console.log('atualizou');
-      
+
       this.positionStartingGenerator = this.playerPosition;
       this.acao();
     }
@@ -149,6 +150,10 @@ export class MapComponent implements OnInit {
     this.started = true;
     this.survivorMoviment();
     this.killerMoviment();
+  }
+
+  restartGame(){
+    location.reload();
   }
 
   acao(){
@@ -244,13 +249,18 @@ export class MapComponent implements OnInit {
           this.playerPosition.l++;
         
       }
+      
+      if(this.playerPosition.l==28 && this.playerPosition.c==15){
+        this.win = true;
+        this.finished = true;
+      }
 
       if(!this.hasGenerator()){
         this.positionStartingGenerator = null;
       }
       
-
-      this.survivorMoviment();
+      if(!this.finished)
+        this.survivorMoviment();
     }, 250);
   }
 
@@ -345,15 +355,22 @@ export class MapComponent implements OnInit {
       let lp = this.playerPosition.l;
       let lc = this.playerPosition.c;
       if(l == lp && c == lc){
-          this.isInjuredPlayer = true;
           this.visibleKiller = false;
+          if(!this.isInjuredPlayer)
+            this.isInjuredPlayer = true;
+          else{
+            this.isDeadPlayer = true;
+            this.finished = true;
+            this.visibleKiller = true;
+          }
           if(lp<14) this.killerPosition.l = 23;
           else this.killerPosition.l = 5;
           if(lc<14) this.killerPosition.c = 23;
           else this.killerPosition.c = 5;
         } 
-      
-      this.killerMoviment();
+
+      if(!this.finished)
+        this.killerMoviment();
     }, 200);
   }
 
@@ -428,7 +445,9 @@ export class MapComponent implements OnInit {
 
   getImage(){
     if(this.isPlayer){
-      if(this.isInjuredPlayer) return '../../assets/injured_survivor.png';
+      if(this.isDeadPlayer) return '../../assets/dead_survivor.png';
+      else if(this.win) return '../../assets/escaped_survivor.png';
+      else if(this.isInjuredPlayer) return '../../assets/injured_survivor.png';
       else return '../../assets/survivor.png';
     }
     return '../../assets/killer.jpeg'
@@ -481,7 +500,6 @@ export class MapComponent implements OnInit {
     for(let i=0; i<29; i++){
       for(let j=0; j<29; j++){
         let index = parseInt(`${i}${j}`)
-        this.visitados[index] = false;
 
         this.listas[index] = new LinkedList<No>();
         if(this.hasPosition(this.todos_os_lados, i, j)){
