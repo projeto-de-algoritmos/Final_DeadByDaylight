@@ -156,8 +156,6 @@ export class MapComponent implements OnInit {
 
     this.loadSongs();
 
-    console.log(this.listas);
-    
   }
 
   loadSongs(){
@@ -602,8 +600,6 @@ export class MapComponent implements OnInit {
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
-          //console.log(this.listas[index]);
-          
         }
         if(this.hasPosition(this.direita_cima_esquerda, i, j)){
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
@@ -893,4 +889,5 @@ export class MapComponent implements OnInit {
       this.white.push({l:27,c:i})
     }
   }
+  
 }

@@ -1,6 +1,7 @@
 <video #videoPlayer
-    autoplay="true" 
+    oncanplay="this.play()"
     preload="auto" 
+    autoplay="true"
     muted="false" 
     width="100%"
     (ended)="skip()"
