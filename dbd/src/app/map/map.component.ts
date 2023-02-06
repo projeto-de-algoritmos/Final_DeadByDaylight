@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LinkedList } from '../lista';
 import { HostListener } from '@angular/core';
 import { Casa } from 'src/interfaces/casa.interface';
@@ -18,6 +18,8 @@ interface S {
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
+
+  @ViewChild('audio', { static: false }) audio!: ElementRef;
 
   listas: LinkedList<No>[] = [];
 
@@ -97,6 +99,15 @@ export class MapComponent implements OnInit {
   finished: boolean = false;
   win: boolean = false;
 
+  chaseSong = false;
+  generatorSong = false;
+  finishedGeneratorSong = false;
+  audioChase = new Audio();
+  audioHeart = new Audio();
+  audioGenerator = new Audio();
+  audioFinishedGenerator = new Audio();
+  audioGateway = new Audio();
+
   constructor() { }
 
   @HostListener('document:keypress', ['$event'])
@@ -120,13 +131,12 @@ export class MapComponent implements OnInit {
           this.direcao='L';
         }
       }
-
-      // if(this.playerPosition != this.positionStartingGenerator){
-      //   this.positionStartingGenerator = null;
-      // }
     }
 
-    //console.log(this.playerPosition, this.positionStartingGenerator);
+    if(key=='w' || key=='a' || key=='s' || key=='d'){
+      this.stopGeneratorSong();
+    }
+
     if(key=='e' && this.lastKey != 'e' && this.positionStartingGenerator==null){
 
       this.positionStartingGenerator = this.playerPosition;
@@ -143,7 +153,80 @@ export class MapComponent implements OnInit {
     this.graphInit();
     if(this.playerPosition.l==5) this.direcao = "L";
     else this.direcao = "N";
+
+    this.loadSongs();
+
+    console.log(this.listas);
     
+  }
+
+  loadSongs(){
+    this.audioChase.src = "../../assets/ChaseMusic_Theme03.ogg"
+    this.audioHeart.src = "../../assets/heartbeat.mp3"
+    this.audioGenerator.src = "../../assets/generator.mp3"
+    this.audioFinishedGenerator.src = "../../assets/repaired_generator.mp3"
+    this.audioGateway.src = "../../assets/gateway.mp3"
+    this.audioChase.load();
+    this.audioHeart.load();
+    this.audioGenerator.load();
+    this.audioFinishedGenerator.load();
+    this.audioGateway.load();
+  }
+
+  playChaseSong() {
+    if(!this.chaseSong){
+      this.chaseSong = true;
+      
+      this.audioChase.loop = true;
+      this.audioHeart.loop = true;
+      this.audioChase.volume = 0.1;
+      this.audioHeart.volume = 0.5;
+      this.audioChase.currentTime = 0;
+      this.audioChase.play();
+      this.audioHeart.play();
+    }
+  }
+
+  stopChaseSong(){
+    this.chaseSong = false;
+    this.audioChase.pause();
+    this.audioHeart.pause();
+  }
+
+  playGeneratorSong(){
+    if(!this.generatorSong){
+      this.generatorSong = true;
+      this.finishedGeneratorSong = false;
+
+      this.audioGenerator.volume = 1;
+      this.audioGenerator.loop = true;
+      this.audioGenerator.play();
+    }
+  }
+
+  stopGeneratorSong(){
+    this.generatorSong = false;
+    
+    this.audioGenerator.pause();
+  }
+
+  playFinishedGeneratorSong(){
+    if(!this.finishedGeneratorSong){
+      this.finishedGeneratorSong = true;
+
+      this.audioFinishedGenerator.volume = 1;
+      this.audioFinishedGenerator.play();
+    }
+  }
+
+  playGatewaySong(){
+    this.audioFinishedGenerator.volume = 1;
+    this.audioGateway.play();
+  }
+
+  stopAllSongs(){
+    this.stopChaseSong();
+    this.stopGeneratorSong();
   }
 
   startGame(){
@@ -170,8 +253,9 @@ export class MapComponent implements OnInit {
     }
     if(generator){
       this.generators.forEach((g, i)=>{
-        if(g==generator) this.generatorProgress(i);
-        
+        if(g==generator) {
+          this.generatorProgress(i);
+        }
       })
     }
   }
@@ -209,12 +293,18 @@ export class MapComponent implements OnInit {
       if(this.hasGenerator()){
         if(this.generatorsProgress[generator]<10){
           this.generatorsProgress[generator]++;
+          this.playGeneratorSong();
+        }
+        if(this.generatorsProgress[generator]==10){
+          this.stopGeneratorSong();
+          this.playFinishedGeneratorSong();
         }
         this.generatorProgress(generator);
       }
     }, 1000);
     if(this.generatorsProgress.filter(a=>a==10).length==5){
       this.white.push({l:28,c:15})
+      this.playGatewaySong();
     }
   }
 
@@ -253,6 +343,7 @@ export class MapComponent implements OnInit {
       if(this.playerPosition.l==28 && this.playerPosition.c==15){
         this.win = true;
         this.finished = true;
+        this.stopAllSongs();
       }
 
       if(!this.hasGenerator()){
@@ -269,88 +360,91 @@ export class MapComponent implements OnInit {
     let c = this.killerPosition.c;
     setTimeout(()=>{
       if(!this.visibleKiller){
-       
-      if(this.hasPosition(this.todos_os_lados, l, c)){
-        let index = Math.floor(Math.random() * 4);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.l++;
-        if(index==2) this.killerPosition.c--;
-        if(index==3) this.killerPosition.c++;
-      }
-      if(this.hasPosition(this.direita_cima_esquerda, l, c)){
-        let index = Math.floor(Math.random() * 3);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.c++;
-        if(index==2) this.killerPosition.c--;
-      }
-      if(this.hasPosition(this.direita_baixo_esquerda, l, c)){
-        let index = Math.floor(Math.random() * 3);
-        if(index==0) this.killerPosition.l++;
-        if(index==1) this.killerPosition.c++;
-        if(index==2) this.killerPosition.c--;
-      }
-      if(this.hasPosition(this.cima_baixo_direita, l, c)){
-        let index = Math.floor(Math.random() * 3);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.l++;
-        if(index==2) this.killerPosition.c++;
-      }
-      if(this.hasPosition(this.cima_baixo_esquerda, l, c)){
-        let index = Math.floor(Math.random() * 3);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.l++;
-        if(index==2) this.killerPosition.c--;
-      }
-      if(this.hasPosition(this.direita_esquerda, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.c++;
-        if(index==1) this.killerPosition.c--;
-      }
-      if(this.hasPosition(this.direita_cima, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.c++;
-        if(index==1) this.killerPosition.l--;
-      }
-      if(this.hasPosition(this.direita_baixo, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.c++;
-        if(index==1) this.killerPosition.l++;
-      }
-      if(this.hasPosition(this.cima_esquerda, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.c--;
-      }
-      if(this.hasPosition(this.cima_baixo, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.l--;
-        if(index==1) this.killerPosition.l++;
-      }
-      if(this.hasPosition(this.esquerda_baixo, l, c)){
-        let index = Math.floor(Math.random() * 2);
-        if(index==0) this.killerPosition.c--;
-        if(index==1) this.killerPosition.l++;
-      }
-      if(this.hasPosition(this.direita, l, c)){
-        this.killerPosition.c++;
-      }
-      if(this.hasPosition(this.cima, l, c)){
-        this.killerPosition.l--;
-      }
-      if(this.hasPosition(this.baixo, l, c)){
-        this.killerPosition.l++;
-      }
-      if(this.hasPosition(this.esquerda, l, c)){
-        this.killerPosition.c--;
-      } 
+        if(this.hasPosition(this.todos_os_lados, l, c)){
+          let index = Math.floor(Math.random() * 4);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.l++;
+          if(index==2) this.killerPosition.c--;
+          if(index==3) this.killerPosition.c++;
+        }
+        if(this.hasPosition(this.direita_cima_esquerda, l, c)){
+          let index = Math.floor(Math.random() * 3);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.c++;
+          if(index==2) this.killerPosition.c--;
+        }
+        if(this.hasPosition(this.direita_baixo_esquerda, l, c)){
+          let index = Math.floor(Math.random() * 3);
+          if(index==0) this.killerPosition.l++;
+          if(index==1) this.killerPosition.c++;
+          if(index==2) this.killerPosition.c--;
+        }
+        if(this.hasPosition(this.cima_baixo_direita, l, c)){
+          let index = Math.floor(Math.random() * 3);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.l++;
+          if(index==2) this.killerPosition.c++;
+        }
+        if(this.hasPosition(this.cima_baixo_esquerda, l, c)){
+          let index = Math.floor(Math.random() * 3);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.l++;
+          if(index==2) this.killerPosition.c--;
+        }
+        if(this.hasPosition(this.direita_esquerda, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.c++;
+          if(index==1) this.killerPosition.c--;
+        }
+        if(this.hasPosition(this.direita_cima, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.c++;
+          if(index==1) this.killerPosition.l--;
+        }
+        if(this.hasPosition(this.direita_baixo, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.c++;
+          if(index==1) this.killerPosition.l++;
+        }
+        if(this.hasPosition(this.cima_esquerda, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.c--;
+        }
+        if(this.hasPosition(this.cima_baixo, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.l--;
+          if(index==1) this.killerPosition.l++;
+        }
+        if(this.hasPosition(this.esquerda_baixo, l, c)){
+          let index = Math.floor(Math.random() * 2);
+          if(index==0) this.killerPosition.c--;
+          if(index==1) this.killerPosition.l++;
+        }
+        if(this.hasPosition(this.direita, l, c)){
+          this.killerPosition.c++;
+        }
+        if(this.hasPosition(this.cima, l, c)){
+          this.killerPosition.l--;
+        }
+        if(this.hasPosition(this.baixo, l, c)){
+          this.killerPosition.l++;
+        }
+        if(this.hasPosition(this.esquerda, l, c)){
+          this.killerPosition.c--;
+        } 
       }
 
       if( Math.abs(this.killerPosition.l-this.playerPosition.l)<this.visibleRange &&
           Math.abs(this.killerPosition.c-this.playerPosition.c)<this.visibleRange){
             
             this.visibleKiller = true;
+            this.playChaseSong();
           }
-      else this.visibleKiller = false;
+      else {
+        this.stopChaseSong();
+        this.visibleKiller = false;
+      }
           
       let lp = this.playerPosition.l;
       let lc = this.playerPosition.c;
@@ -362,6 +456,7 @@ export class MapComponent implements OnInit {
             this.isDeadPlayer = true;
             this.finished = true;
             this.visibleKiller = true;
+            this.stopAllSongs();
           }
           if(lp<14) this.killerPosition.l = 23;
           else this.killerPosition.l = 5;
