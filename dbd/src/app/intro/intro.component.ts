@@ -10,6 +10,8 @@ export class IntroComponent implements OnInit {
 
   @ViewChild('videoPlayer', { static: false }) videoPlayer!: ElementRef;
 
+  muted = true;
+
   constructor(private _router: Router) { }
 
   ngOnInit(): void {
@@ -18,6 +20,11 @@ export class IntroComponent implements OnInit {
   skip() {
     this.videoPlayer.nativeElement.pause();
     this._router.navigate(['/tutorial']);
+  }
+
+  toggleMute() {
+    this.videoPlayer.nativeElement.muted = !this.videoPlayer.nativeElement.muted;
+    this.muted = !this.muted;
   }
 
 }

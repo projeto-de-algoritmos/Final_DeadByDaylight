@@ -1,8 +1,9 @@
 <video #videoPlayer
     oncanplay="this.play()"
+    onloadedmetadata="this.muted = true"
+    [volume]="0.5"
     preload="auto" 
     autoplay="true"
-    muted="false" 
     width="100%"
     (ended)="skip()"
     class="flex h-full bg-black"
@@ -15,4 +16,13 @@
     (click)="skip()"
 >
     Pular >
+</button>
+<button 
+    class="absolute right-5 top-5 z-1 pt-2 text-white font-semibold text-xl border-2 border-white px-2 rounded-md"
+    (click)="toggleMute()"
+>
+    <mat-icon *ngIf="muted; else unmuted">volume_off</mat-icon>
+    <ng-template #unmuted>
+        <mat-icon>volume_up</mat-icon>
+    </ng-template>
 </button>
