@@ -5,6 +5,7 @@ import { Casa } from 'src/interfaces/casa.interface';
 import { No } from 'src/interfaces/no.interface';
 import { Palet } from 'src/interfaces/palet.interface';
 import { Aresta } from 'src/interfaces/aresta.interface';
+import { Dijkstra } from '../dijkstra';
 
 interface S {
   de: Casa,
@@ -20,6 +21,8 @@ interface S {
 export class MapComponent implements OnInit {
 
   @ViewChild('audio', { static: false }) audio!: ElementRef;
+
+  dijkstra = new Dijkstra();
 
   listas: LinkedList<No>[] = [];
 
@@ -60,15 +63,15 @@ export class MapComponent implements OnInit {
     {l:28,c:25}
   ];
   palets: Palet[] = [
-    {casa: {l:2,c:21}, aberta: true},
-    {casa: {l:6,c:25}, aberta: true},
-    {casa: {l:11,c:18}, aberta: true},
-    {casa: {l:12,c:1}, aberta: true},
-    {casa: {l:12,c:27}, aberta: true},
-    {casa: {l:15,c:19}, aberta: true},
-    {casa: {l:17,c:10}, aberta: true},
-    {casa: {l:18,c:24}, aberta: true},
-    {casa: {l:20,c:1}, aberta: true},
+    {casa: {l:2,c:21}, aberta: false},
+    {casa: {l:6,c:25}, aberta: false},
+    {casa: {l:11,c:18}, aberta: false},
+    {casa: {l:12,c:1}, aberta: false},
+    {casa: {l:12,c:27}, aberta: false},
+    {casa: {l:15,c:19}, aberta: false},
+    {casa: {l:17,c:10}, aberta: false},
+    {casa: {l:18,c:24}, aberta: false},
+    {casa: {l:20,c:1}, aberta: false},
   ];
   start: Casa[] = [
     {l:5,c:5},
@@ -156,6 +159,16 @@ export class MapComponent implements OnInit {
 
     this.loadSongs();
 
+    const casaA = {
+      l: 11,
+      c: 21,
+    }
+    const casaB = {
+      l: 5,
+      c: 25,
+    }
+    const menorCaminho = this.dijkstra.menorCaminho(casaA, casaB);
+    console.log(menorCaminho);
   }
 
   loadSongs(){
@@ -596,71 +609,103 @@ export class MapComponent implements OnInit {
 
         this.listas[index] = new LinkedList<No>();
         if(this.hasPosition(this.todos_os_lados, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
         }
         if(this.hasPosition(this.direita_cima_esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
         if(this.hasPosition(this.direita_baixo_esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
         if(this.hasPosition(this.cima_baixo_esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
         if(this.hasPosition(this.cima_baixo_direita, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
         }
         if(this.hasPosition(this.direita_esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
         if(this.hasPosition(this.direita_cima, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
         }
         if(this.hasPosition(this.direita_baixo, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
         }
         if(this.hasPosition(this.cima_esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
         if(this.hasPosition(this.cima_baixo, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
         }
         if(this.hasPosition(this.esquerda_baixo, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
         }
         if(this.hasPosition(this.direita, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, 1);
           this.listas[index].push({casa:{l:i, c:j+1}, peso:1})
         }
         if(this.hasPosition(this.cima, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, 1);
           this.listas[index].push({casa:{l:i-1, c:j}, peso:1})
         }
         if(this.hasPosition(this.baixo, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, 1);
           this.listas[index].push({casa:{l:i+1, c:j}, peso:1})
         }
         if(this.hasPosition(this.esquerda, i, j)){
+          this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, 1);
           this.listas[index].push({casa:{l:i, c:j-1}, peso:1})
         }
       }
     }
     this.windowsInit();
-
+    this.paletsInit();
   }
 
   windowsInit(){
@@ -669,6 +714,11 @@ export class MapComponent implements OnInit {
       let j = window.c;
       let index = parseInt(`${i}${j}`)
       if(this.hasPosition(this.white, i-1, j)){
+        this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i-1, c:j}, {l:i, c:j}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i+1, c:j}, {l:i, c:j}, this.pesoJanela);
+
         this.listas[index].push({casa:{l:i-1, c:j}, peso:this.pesoJanela})
         this.listas[index].push({casa:{l:i+1, c:j}, peso:this.pesoJanela})
         index = parseInt(`${i-1}${j}`);
@@ -677,12 +727,51 @@ export class MapComponent implements OnInit {
         this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoJanela})
       }
       if(this.hasPosition(this.white, i, j-1)){
+        this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i, c:j-1}, {l:i, c:j}, this.pesoJanela);
+        this.dijkstra.addEdge({l:i, c:j+1}, {l:i, c:j}, this.pesoJanela);
+
         this.listas[index].push({casa:{l:i, c:j-1}, peso:this.pesoJanela})
         this.listas[index].push({casa:{l:i, c:j+1}, peso:this.pesoJanela})
         index = parseInt(`${i}${j-1}`);
         this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoJanela})
         index = parseInt(`${i}${j+1}`);
         this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoJanela})
+      }
+    })
+  }
+  
+  paletsInit(){
+    this.palets.forEach(palet=>{
+      let i = palet.casa.l;
+      let j = palet.casa.c;
+      let index = parseInt(`${i}${j}`)
+      if(this.hasPosition(this.white, i-1, j)){
+        this.dijkstra.addEdge({l:i, c:j}, {l:i-1, c:j}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i, c:j}, {l:i+1, c:j}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i-1, c:j}, {l:i, c:j}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i+1, c:j}, {l:i, c:j}, this.pesoPalet);
+
+        this.listas[index].push({casa:{l:i-1, c:j}, peso:this.pesoPalet})
+        this.listas[index].push({casa:{l:i+1, c:j}, peso:this.pesoPalet})
+        index = parseInt(`${i-1}${j}`);
+        this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoPalet})
+        index = parseInt(`${i+1}${j}`);
+        this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoPalet})
+      }
+      if(this.hasPosition(this.white, i, j-1)){
+        this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j-1}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i, c:j}, {l:i, c:j+1}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i, c:j-1}, {l:i, c:j}, this.pesoPalet);
+        this.dijkstra.addEdge({l:i, c:j+1}, {l:i, c:j}, this.pesoPalet);
+
+        this.listas[index].push({casa:{l:i, c:j-1}, peso:this.pesoPalet})
+        this.listas[index].push({casa:{l:i, c:j+1}, peso:this.pesoPalet})
+        index = parseInt(`${i}${j-1}`);
+        this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoPalet})
+        index = parseInt(`${i}${j+1}`);
+        this.listas[index].push({casa:{l:i, c:j}, peso:this.pesoPalet})
       }
     })
   }
@@ -760,7 +849,7 @@ export class MapComponent implements OnInit {
       if(i!=8 && i!=14 && i!=22)
         this.white.push({l:1,c:i})
     }
-    coluna = [1,5,9,13,17,21,23,27]
+    coluna = [1,5,9,13,17,23,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:2,c:i})
@@ -780,7 +869,7 @@ export class MapComponent implements OnInit {
       if(coluna.includes(i))
         this.white.push({l:5,c:i})
     }
-    coluna = [1,3,7,11,15,23,25,27]
+    coluna = [1,3,7,11,15,23,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:6,c:i})
@@ -805,12 +894,12 @@ export class MapComponent implements OnInit {
       if(coluna.includes(i))
         this.white.push({l:10,c:i})
     }
-    coluna = [1,3,5,7,9,11,12,13,14,15,16,17,18,19,20,21,23,24,25,27]
+    coluna = [1,3,5,7,9,11,12,13,14,15,16,17,19,20,21,23,24,25,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:11,c:i})
     }
-    coluna = [1,3,7,9,11,17,19,21,23,25,27]
+    coluna = [3,7,9,11,17,19,21,23,25]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:12,c:i})
@@ -825,7 +914,7 @@ export class MapComponent implements OnInit {
       if(coluna.includes(i))
         this.white.push({l:14,c:i})
     }
-    coluna = [1,3,5,7,9,11,17,19,21,25,27]
+    coluna = [1,3,5,7,9,11,17,21,25,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:15,c:i})
@@ -835,12 +924,12 @@ export class MapComponent implements OnInit {
       if(coluna.includes(i))
         this.white.push({l:16,c:i})
     }
-    coluna = [1,3,4,5,6,7,9,10,11,12,13,14,15,16,17,19,21,23,27]
+    coluna = [1,3,4,5,6,7,9,11,12,13,14,15,16,17,19,21,23,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:17,c:i})
     }
-    coluna = [1,5,9,19,21,23,24,25,27]
+    coluna = [1,5,9,19,21,23,25,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:18,c:i})
@@ -850,7 +939,7 @@ export class MapComponent implements OnInit {
       if(coluna.includes(i))
         this.white.push({l:19,c:i})
     }
-    coluna = [1,13,21,23,25,27]
+    coluna = [13,21,23,25,27]
     for(let i=1; i<28; i++){
       if(coluna.includes(i))
         this.white.push({l:20,c:i})
@@ -891,3 +980,5 @@ export class MapComponent implements OnInit {
   }
   
 }
+
+
