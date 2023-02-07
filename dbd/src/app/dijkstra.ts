@@ -6,7 +6,6 @@ interface NoCasa {
   casa2: Casa;
 }
 
-
 export class Dijkstra {
   private grafo: Map<Casa, Map<Casa, number>> = new Map();
 
@@ -23,6 +22,7 @@ export class Dijkstra {
   }
 
   ehIgual(casa1: Casa, casa2: Casa){
+    if(casa1==undefined || casa2==undefined) return false;
     return casa1.l==casa2.l && casa1.c==casa2.c;
   }
 
@@ -154,6 +154,8 @@ export class Dijkstra {
 
     const caminho = [fim];
     let atual = fim;
+
+    if(atual && inicio)
     while (!this.ehIgual(atual, inicio)) {
         //console.log(atual, inicio);
 
@@ -162,5 +164,5 @@ export class Dijkstra {
     }
 
     return caminho;
-    }
+  }
 }

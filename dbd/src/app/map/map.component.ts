@@ -7,10 +7,11 @@ import { Palet } from 'src/interfaces/palet.interface';
 import { Aresta } from 'src/interfaces/aresta.interface';
 import { Dijkstra } from '../dijkstra';
 
-interface S {
-  de: Casa,
-  para: Casa,
-  custo: number
+
+interface Memory {
+  de: Casa;
+  para: Casa;
+  caminho: Casa[];
 }
 
 @Component({
@@ -44,6 +45,8 @@ export class MapComponent implements OnInit {
 
   pesoJanela: number = 5;
   pesoPalet: number = 15;
+  survivorSpeed= 250;
+  killerSpeed= 200;
 
   white: Casa[] = [];
   windows: Casa[] = [
@@ -73,6 +76,17 @@ export class MapComponent implements OnInit {
     {casa: {l:18,c:24}, aberta: false},
     {casa: {l:20,c:1}, aberta: false},
   ];
+  casasPalets: Casa[] = [
+    {l:2,c:21},
+    {l:6,c:25},
+    {l:11,c:18},
+    {l:12,c:1},
+    {l:12,c:27},
+    {l:15,c:19},
+    {l:17,c:10},
+    {l:18,c:24},
+    {l:20,c:1},
+  ]
   start: Casa[] = [
     {l:5,c:5},
     {l:5,c:23},
@@ -156,19 +170,8 @@ export class MapComponent implements OnInit {
     this.graphInit();
     if(this.playerPosition.l==5) this.direcao = "L";
     else this.direcao = "N";
-
+    //this.initMemory();
     this.loadSongs();
-
-    const casaA = {
-      l: 11,
-      c: 21,
-    }
-    const casaB = {
-      l: 5,
-      c: 25,
-    }
-    const menorCaminho = this.dijkstra.menorCaminho(casaA, casaB);
-    console.log(menorCaminho);
   }
 
   loadSongs(){
@@ -242,6 +245,7 @@ export class MapComponent implements OnInit {
 
   startGame(){
     this.started = true;
+    this.visibleKiller = false;
     this.survivorMoviment();
     this.killerMoviment();
   }
@@ -327,26 +331,31 @@ export class MapComponent implements OnInit {
           this.playerPosition.c++;
         else if(this.hasPosition(this.windows, this.playerPosition.l, this.playerPosition.c+1))
           this.playerPosition.c++;
-        
+        else if(this.hasPosition(this.casasPalets, this.playerPosition.l, this.playerPosition.c+1))
+          this.playerPosition.c++;
       }
       if(this.direcao=='O'){
         if(this.hasPosition(this.white, this.playerPosition.l, this.playerPosition.c-1))
           this.playerPosition.c--;
         else if(this.hasPosition(this.windows, this.playerPosition.l, this.playerPosition.c-1))
           this.playerPosition.c--;
-        
+        else if(this.hasPosition(this.casasPalets, this.playerPosition.l, this.playerPosition.c-1))
+          this.playerPosition.c--;
       }
       if(this.direcao=='N'){
         if(this.hasPosition(this.white, this.playerPosition.l-1, this.playerPosition.c))
           this.playerPosition.l--;
         else if(this.hasPosition(this.windows, this.playerPosition.l-1, this.playerPosition.c))
           this.playerPosition.l--;
-        
+        else if(this.hasPosition(this.casasPalets, this.playerPosition.l-1, this.playerPosition.c))
+          this.playerPosition.l--;
       }
       if(this.direcao=='S'){
         if(this.hasPosition(this.white, this.playerPosition.l+1, this.playerPosition.c))
           this.playerPosition.l++;
         else if(this.hasPosition(this.windows, this.playerPosition.l+1, this.playerPosition.c))
+          this.playerPosition.l++;
+        else if(this.hasPosition(this.casasPalets, this.playerPosition.l+1, this.playerPosition.c))
           this.playerPosition.l++;
         
       }
@@ -363,12 +372,22 @@ export class MapComponent implements OnInit {
       
       if(!this.finished)
         this.survivorMoviment();
-    }, 250);
+    }, this.survivorSpeed);
   }
 
   killerMoviment(){
     let l = this.killerPosition.l;
     let c = this.killerPosition.c;
+    let lp = this.playerPosition.l;
+    let lc = this.playerPosition.c;
+
+    let index = parseInt(`${l}${c}`)
+    let time;
+    if(this.listas[index].start)
+      time = this.listas[index].start.value.peso;
+    else 
+      time = 1;
+     
     setTimeout(()=>{
       if(!this.visibleKiller){
         if(this.hasPosition(this.todos_os_lados, l, c)){
@@ -445,6 +464,14 @@ export class MapComponent implements OnInit {
           this.killerPosition.c--;
         } 
       }
+      else{
+        let mesmaCasa = l == lp && c == lc;
+        if(!mesmaCasa){
+          let caminho = this.dijkstra.menorCaminho(this.killerPosition, this.playerPosition)!;
+          this.killerPosition.l = caminho[1].l;
+          this.killerPosition.c = caminho[1].c;
+        }
+      }
 
       if( Math.abs(this.killerPosition.l-this.playerPosition.l)<this.visibleRange &&
           Math.abs(this.killerPosition.c-this.playerPosition.c)<this.visibleRange){
@@ -457,8 +484,6 @@ export class MapComponent implements OnInit {
         this.visibleKiller = false;
       }
           
-      let lp = this.playerPosition.l;
-      let lc = this.playerPosition.c;
       if(l == lp && c == lc){
           this.visibleKiller = false;
           if(!this.isInjuredPlayer)
@@ -477,7 +502,7 @@ export class MapComponent implements OnInit {
 
       if(!this.finished)
         this.killerMoviment();
-    }, 200);
+    }, time*this.killerSpeed);
   }
 
   hasPosition(array: Casa[], l:number, c:number):boolean {
